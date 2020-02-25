@@ -1,10 +1,13 @@
 const algorithmia = require('algorithmia')
 const algorithmiaApiKey = require('../credentials/algorithmia.json').apiKey
+// https://www.youtube.com/watch?v=8XgbjUP-Gxo
+
 const sentenceBoundaryDetection = require('sbd')
 
 const watsonApiKey = require('../credentials/watson-nlu.json').apikey
 const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js')
- 
+ // https://www.youtube.com/watch?v=C6bf3A95Q7A
+
 const nlu = new NaturalLanguageUnderstandingV1({
   iam_apikey: watsonApiKey,
   version: '2018-04-05',
@@ -18,10 +21,10 @@ async function robot() {
   const content = state.load()
 
   await fetchContentFromWikipedia(content)
-  //sanitizeContent(content)
-  // breakContentIntoSentences(content)
-  // limitMaximumSentences(content)
-  // await fetchKeywordsOfAllSentences(content)
+  sanitizeContent(content)
+  breakContentIntoSentences(content)
+  limitMaximumSentences(content)
+  await fetchKeywordsOfAllSentences(content)
 
   state.save(content)
 
