@@ -14,26 +14,26 @@ const nlu = new NaturalLanguageUnderstandingV1({
 const state = require('./state.js')
 
 async function robot() {
-  console.log('> [text-robot] Starting...')
+  console.log('> [text-robot] Iniciando...')
   const content = state.load()
 
   await fetchContentFromWikipedia(content)
-  sanitizeContent(content)
-  breakContentIntoSentences(content)
-  limitMaximumSentences(content)
-  await fetchKeywordsOfAllSentences(content)
+  //sanitizeContent(content)
+  // breakContentIntoSentences(content)
+  // limitMaximumSentences(content)
+  // await fetchKeywordsOfAllSentences(content)
 
   state.save(content)
 
   async function fetchContentFromWikipedia(content) {
-    console.log('> [text-robot] Fetching content from Wikipedia')
+    console.log('> [text-robot] Pesquisando na Wikipedia')
     const algorithmiaAuthenticated = algorithmia(algorithmiaApiKey)
     const wikipediaAlgorithm = algorithmiaAuthenticated.algo('web/WikipediaParser/0.1.2')
-    const wikipediaResponse = await wikipediaAlgorithm.pipe(content.searchTerm)
+    const wikipediaResponse = await wikipediaAlgorithm.pipe({ "articleName" : content.searchTerm, "lang" : "pt" })
     const wikipediaContent = wikipediaResponse.get()
-
+    console.log(wikipediaContent)
     content.sourceContentOriginal = wikipediaContent.content
-    console.log('> [text-robot] Fetching done!')
+    console.log('> [text-robot] Pesquisa concluida!')
   }
 
   function sanitizeContent(content) {
@@ -79,14 +79,14 @@ async function robot() {
   }
 
   async function fetchKeywordsOfAllSentences(content) {
-    console.log('> [text-robot] Starting to fetch keywords from Watson')
+    console.log('> [text-robot] Iniciando a busca de palavras-chave no Watson')
 
     for (const sentence of content.sentences) {
-      console.log(`> [text-robot] Sentence: "${sentence.text}"`)
+      console.log(`> [text-robot] Sentenca: "${sentence.text}"`)
 
       sentence.keywords = await fetchWatsonAndReturnKeywords(sentence.text)
 
-      console.log(`> [text-robot] Keywords: ${sentence.keywords.join(', ')}\n`)
+      console.log(`> [text-robot] Palavras-chave: ${sentence.keywords.join(', ')}\n`)
     }
   }
 
